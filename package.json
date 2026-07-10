@@ -1,0 +1,10 @@
+{
+  "name": "payphone-cicd",
+  "version": "1.0.0",
+  "description": "Integración de Payphone con pipeline CI/CD mediante GitHub Actions",
+  "private": true,
+  "scripts": {
+    "test": "node scripts/test.js",
+    "build": "node scripts/build.js"
+  }
+}

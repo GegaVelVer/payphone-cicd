@@ -1,0 +1,113 @@
+name: Pipeline CI-CD Payphone
+
+# El pipeline se ejecutará automáticamente
+# cada vez que exista un push en la rama main.
+on:
+  push:
+    branches:
+      - main
+
+  # También permite ejecutarlo manualmente.
+  workflow_dispatch:
+
+# Permisos necesarios para publicar
+# el proyecto mediante GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Evita que existan dos despliegues
+# ejecutándose al mismo tiempo.
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+
+  # ==================================
+  # ETAPAS DE TEST Y BUILD
+  # ==================================
+
+  test-build:
+
+    name: Test y Build
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Descargar el proyecto.
+      - name: Descargar repositorio
+
+        uses: actions/checkout@v6
+
+
+      # Preparar Node.js.
+      - name: Configurar Node.js
+
+        uses: actions/setup-node@v6
+
+        with:
+
+          node-version: "22"
+
+
+      # Ejecutar las pruebas automáticas.
+      - name: Ejecutar pruebas
+
+        run: npm test
+
+
+      # Generar la carpeta dist.
+      - name: Generar build
+
+        run: npm run build
+
+        env:
+
+          PAYPHONE_TOKEN: ${{ secrets.PAYPHONE_TOKEN }}
+
+
+      # Preparar GitHub Pages.
+      - name: Configurar GitHub Pages
+
+        uses: actions/configure-pages@v5
+
+
+      # Cargar la carpeta dist.
+      - name: Cargar archivos del sitio
+
+        uses: actions/upload-pages-artifact@v4
+
+        with:
+
+          path: "./dist"
+
+
+  # ==================================
+  # ETAPA DE DEPLOY
+  # ==================================
+
+  deploy:
+
+    name: Deploy
+
+    needs: test-build
+
+    runs-on: ubuntu-latest
+
+    environment:
+
+      name: github-pages
+
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+
+      # Publicar el proyecto.
+      - name: Publicar en GitHub Pages
+
+        id: deployment
+
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Tienda de Prueba - Payphone</title>
+
+  <!-- Dependencias oficiales de Payphone - Cajita de Pagos v2.0 -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.payphonetodoesposible.com/box/v2.0/payphone-payment-box.css"
+  >
+
+  <script
+    type="module"
+    src="https://cdn.payphonetodoesposible.com/box/v2.0/payphone-payment-box.js">
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      padding: 32px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+    }
+
+    .card h1 {
+      color: #5a2d82;
+      font-size: 22px;
+      margin-top: 0;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: #777777;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .producto {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      background: #faf7fd;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 20px;
+
+      text-align: left;
+    }
+
+    .producto img {
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .producto-info h3 {
+      color: #333333;
+      font-size: 15px;
+      margin: 0 0 4px;
+    }
+
+    .precio {
+      color: #5a2d82;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    #pp-button {
+      margin-top: 10px;
+    }
+
+    .footer-note {
+      color: #999999;
+      font-size: 11px;
+      margin-top: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="card">
+
+    <h1>Tienda de Prueba</h1>
+
+    <p class="subtitle">
+      Integración Payphone - Proyecto CI/CD
+    </p>
+
+    <section class="producto">
+
+      <img
+        src="https://placehold.co/56x56/5a2d82/ffffff?text=%F0%9F%93%A6"
+        alt="Imagen del producto"
+      >
+
+      <div class="producto-info">
+
+        <h3>Producto de prueba</h3>
+
+        <span class="precio">
+          $4.00 USD
+        </span>
+
+      </div>
+
+    </section>
+
+    <!-- En este contenedor se mostrará el botón de Payphone -->
+    <div id="pp-button"></div>
+
+    <p class="footer-note">
+      Modo SANDBOX - Transacción de prueba.
+      No se cobra dinero real.
+    </p>
+
+  </main>
+
+  <script>
+
+    /*
+      El pipeline reemplazará automáticamente
+      este valor por el token almacenado
+      en GitHub Secrets.
+    */
+
+    const PAYPHONE_TOKEN = "__PAYPHONE_TOKEN__";
+
+    /*
+      Esperamos que el contenido de la página
+      termine de cargarse.
+    */
+
+    window.addEventListener("DOMContentLoaded", function () {
+
+      /*
+        Se genera un identificador único
+        para cada transacción.
+      */
+
+      const clientTransactionId = "TX-" + Date.now();
+
+      /*
+        Guardamos el identificador temporalmente
+        en el navegador.
+      */
+
+      sessionStorage.setItem(
+        "clientTransactionId",
+        clientTransactionId
+      );
+
+      /*
+        Configuración de la Cajita de Pagos
+        de Payphone.
+      */
+
+      const payphoneButton = new PPaymentButtonBox({
+
+        token: PAYPHONE_TOKEN,
+
+        clientTransactionId: clientTransactionId,
+
+        /*
+          Payphone trabaja el valor en centavos:
+          400 centavos equivalen a $4.00.
+        */
+
+        amount: 400,
+
+        amountWithoutTax: 400,
+
+        currency: "USD",
+
+        reference:
+          "Compra de prueba - Producto de prueba",
+
+        lang: "es"
+
+      });
+
+      /*
+        Se muestra la Cajita de Pagos dentro
+        del elemento con id pp-button.
+      */
+
+      payphoneButton.render("pp-button");
+
+    });
+
+  </script>
+
+</body>
+</html>
